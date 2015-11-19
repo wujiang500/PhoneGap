@@ -1,0 +1,15 @@
+//
+//  NSMeapLocationPlugin.h
+//  test
+//
+//  Created by xufucheng on 14-6-10.
+//  Copyright (c) 2014年 com.nationsky. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+@interface NSMeapLocationPlugin : CDVPlugin
+
+- (void)userLocation:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options;
+
+@end

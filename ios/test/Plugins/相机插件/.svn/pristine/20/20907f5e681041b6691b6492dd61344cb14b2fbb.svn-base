@@ -1,0 +1,63 @@
+//
+//  NSMeapTakePhotoPlugin.m
+//  test
+//
+//  Created by WuJ on 14/12/24.
+//  Copyright (c) 2014年 com.nationsky. All rights reserved.
+//
+
+#import "NSMeapTakePhotoPlugin.h"
+
+@interface NSMeapTakePhotoPlugin ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate>
+
+@end
+
+@implementation NSMeapTakePhotoPlugin
+- (void)takePhoto:(NSMutableArray *)arguments withDict:(NSMutableDictionary *)options
+{
+    if(arguments.count > 0)
+    {
+        self.callBackId = [arguments objectAtIndex:0];
+        //先设定sourceType为相机，然后判断相机是否可用（ipod）没相机，不可用将sourceType设定为相片库
+        UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
+        //    if (![UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
+        //        sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        //    }
+        //sourceType = UIImagePickerControllerSourceTypeCamera; //照相机
+        //sourceType = UIImagePickerControllerSourceTypePhotoLibrary; //图片库
+        //sourceType = UIImagePickerControllerSourceTypeSavedPhotosAlbum; //保存的相片
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];//初始化
+        picker.delegate = self;
+        picker.allowsEditing = YES;//设置可编辑
+        picker.sourceType = sourceType;
+        
+        self.navController = [[[UINavigationController alloc] initWithRootViewController:picker] autorelease];
+        
+        UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(scanFinished)];
+        picker.navigationItem.rightBarButtonItem = item;
+//        picker.navigationItem.title = title;
+        
+        [self.viewController presentViewController:picker animated:YES completion:nil];
+        
+        [picker release];
+        
+    }
+    else
+    {
+        CDVPluginResult *result = nil;
+        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"参数数目错误!"];
+        [self error:result callbackId:self.callBackId];
+    }
+
+}
+
+- (void)scanFinished
+{
+    [self.navController dismissViewControllerAnimated:YES completion:nil];
+    CDVPluginResult *result = nil;
+    NSString *returnStr = @"地图退出成功";
+    result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:returnStr];
+    [self success:result callbackId:self.callBackId];
+}
+
+@end
